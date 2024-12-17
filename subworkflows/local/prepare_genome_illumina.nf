@@ -207,7 +207,7 @@ workflow PREPARE_GENOME {
             if (params.blast_db) {
                 if (params.blast_db.endsWith('.tar.gz')) {
                     UNTAR_BLAST_DB (
-                        [ [:], params.blast_db ]
+                        [ [:], file(params.blast_db) ]
                     )
                     ch_blast_db = UNTAR_BLAST_DB.out.untar
                     ch_versions = ch_versions.mix(UNTAR_BLAST_DB.out.versions)
