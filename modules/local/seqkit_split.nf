@@ -42,5 +42,4 @@ process SEQKIT_SPLIT {
         seqkit: \$(seqkit version | cut -d' ' -f2)
     END_VERSIONS
     """
-
 }
