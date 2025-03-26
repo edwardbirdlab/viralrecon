@@ -32,9 +32,13 @@ workflow ABACAS_MULTI {
         .map { meta, fasta -> fasta }
         .set { ch_fasta}
 
+    scaffold
+        .combine (ch_fasta)
+        .set { ch_scaffold_fasta }  
+
     ABACAS (
-        scaffold.first(),
-        ch_fasta
+        ch_scaffold_fasta.map { meta, scaffold, fasta -> tuple( meta, scaffold ) },
+        ch_scaffold_fasta.map { meta, scaffold, fasta -> fasta }
     )
     ch_abacas = ABACAS.out.results
     ch_versions = ch_versions.mix(ABACAS.out.versions)
@@ -57,6 +61,3 @@ workflow ABACAS_MULTI {
     abacas_results     = SEQKIT_CONCAT.out.fastx
     versions           = ch_versions           // channel: [ versions.yml ]
 }
-
-
-
