@@ -2,13 +2,12 @@
 // Process multiple multifasta files with abacas
 //
 include { ABACAS        } from '../../modules/nf-core/abacas/main'
-include { SEQKIT_SPLIT  } from '../../modules/local/seqkit_split'
-include { SEQKIT_CONCAT } from '../../modules/nf-core/seqkit/concat/main'
 
 workflow ABACAS_MULTI {
     take:
     scaffold   // channel: [ val(meta), path(scaffold) ]
     multifasta // channel: /path/to/genome.fasta
+    assembler
 
     main:
 
@@ -17,20 +16,14 @@ workflow ABACAS_MULTI {
     //
     // Split multifasta file into individual fasta files
     //
-    SEQKIT_SPLIT (
-        multifasta.map { [ [:], it ] }
-    )
-    ch_fasta_list = SEQKIT_SPLIT.out.fastx
-    ch_versions = ch_versions.mix(SEQKIT_SPLIT.out.versions)
+    multifasta
+        .splitFasta( by: 1, file: true )
+        .set { ch_fasta }
 
     //
     // Run abacas on each fasta file
     //
     ch_abacas = Channel.empty()
-    ch_fasta_list
-        .transpose()
-        .map { meta, fasta -> fasta }
-        .set { ch_fasta}
 
     scaffold
         .combine (ch_fasta)
@@ -49,15 +42,22 @@ workflow ABACAS_MULTI {
 
     ch_abacas
         .map { meta, files -> tuple(meta, files[3]) }
-        .groupTuple()
-        .map { meta, files -> tuple(meta, files.flatten()) }
-        .set{ ch_abacas }
+        .multiMap{ meta, fasta ->
+            metadata: [meta.id, meta.clone()]
+            fasta: [meta.id, fasta]
+        }
+        .set { ch_abacas_split }  
 
-    SEQKIT_CONCAT (
-        ch_abacas
-    )
+        ch_abacas_split.fasta
+        .collectFile (storeDir: "${params.outdir}/assembly/${assembler}/abacas_multi") { id, fasta ->
+            ["${id}.fa",fasta]
+        }
+        .map { file -> [file.simpleName, file] }
+        .join(ch_abacas_split.metadata)
+        .map { id, fasta, meta -> tuple(meta, fasta) }
+        .set { ch_abacas_results }
 
     emit:
-    abacas_results     = SEQKIT_CONCAT.out.fastx
+    abacas_results     = ch_abacas_results     // channel: [ val(meta), path('*.abacas*') ]
     versions           = ch_versions           // channel: [ versions.yml ]
 }

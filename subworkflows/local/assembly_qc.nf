@@ -17,6 +17,7 @@ workflow ASSEMBLY_QC {
     blast_db              // channel: /path/to/blast_db/
     blast_header          // channel: /path/to/blast_header.txt
     blast_filtered_header // channel: /path/to/blast_filtered_header.txt
+    assembler
 
     main:
 
@@ -71,22 +72,8 @@ workflow ASSEMBLY_QC {
     ch_abacas_results = Channel.empty()
     if (!params.skip_abacas) {
         fasta
-            .branch { fasta_file ->
-                def is_multi = false
-                def count = 0
-                file(fasta_file).withReader { reader ->
-                    String line
-                    while ((line = reader.readLine()) != null) {
-                        if (line.startsWith('>')) {
-                            count++
-                            if (count > 1) {
-                                is_multi = true
-                                break
-                            }
-                        }
-                    }
-                }
-                multi: is_multi
+            .branch { fasta ->
+                multi: fasta.countFasta() > 1
                 single: true
             }
             .set { fasta_type }
@@ -98,7 +85,8 @@ workflow ASSEMBLY_QC {
 
         ABACAS_MULTI (
             scaffolds,
-            fasta_type.multi
+            fasta_type.multi,
+            assembler
         )
 
         ch_abacas_results = ABACAS_SINGLE.out.results.mix(ABACAS_MULTI.out.abacas_results)
