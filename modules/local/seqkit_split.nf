@@ -29,7 +29,7 @@ process SEQKIT_SPLIT {
         split \\
         --threads $task.cpus \\
         $args \\
-        $fastx 
+        $fastx
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

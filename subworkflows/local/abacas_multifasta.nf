@@ -34,7 +34,7 @@ workflow ABACAS_MULTI {
 
     scaffold
         .combine (ch_fasta)
-        .set { ch_scaffold_fasta }  
+        .set { ch_scaffold_fasta }
 
     ABACAS (
         ch_scaffold_fasta.map { meta, scaffold, fasta -> tuple( meta, scaffold ) },
