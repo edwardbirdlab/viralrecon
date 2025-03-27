@@ -336,9 +336,6 @@ jobs:
             - "singularity"
           test_name:
             - "test_illumina_fragmented"
-          # parameters:
-          #   - "--skip_freyja" 
-          #   - "--fasta ./crimea_congo.fasta.gz --gff ./crimea_congo.gff.gz"
           isMaster:
             - ${{ github.base_ref == 'master' }}
           # Exclude conda and singularity on dev
@@ -383,15 +380,6 @@ jobs:
 
         - name: Clean up Disk space
           uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
-        # - name: Download crimea_congo.fasta.gz
-        #   if: contains(matrix.parameters, 'fasta')
-        #   run: |
-        #     wget https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/genome/crimea_congo/crimea_congo.fasta.gz
-
-        # - name: Download crimea_congo.gff.gz
-        #   if: contains(matrix.parameters, 'gff')
-        #   run: |
-        #     wget https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/genome/crimea_congo/crimea_congo.gff.gz
 
         - name: "Run pipeline with test data ${{ matrix.NXF_VER }} | ${{ matrix.test_name }} | ${{ matrix.profile }}"
           run: |

@@ -46,7 +46,7 @@ workflow ABACAS_MULTI {
             metadata: [meta.id, meta.clone()]
             fasta: [meta.id, fasta]
         }
-        .set { ch_abacas_split }  
+        .set { ch_abacas_split } 
 
         ch_abacas_split.fasta
         .collectFile (storeDir: "${params.outdir}/assembly/${assembler}/abacas_multi") { id, fasta ->
