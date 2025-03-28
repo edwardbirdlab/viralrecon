@@ -7,7 +7,7 @@ workflow ABACAS_MULTI {
     take:
     scaffold   // channel: [ val(meta), path(scaffold) ]
     multifasta // channel: /path/to/genome.fasta
-    assembler
+    assembler  // string: assembler name
 
     main:
 
@@ -43,7 +43,7 @@ workflow ABACAS_MULTI {
     ch_abacas
         .map { meta, files -> tuple(meta, files[3]) }
         .multiMap{ meta, fasta ->
-            metadata: [meta.id, meta.clone()]
+            metadata: [meta.id, meta]
             fasta: [meta.id, fasta]
         }
         .set { ch_abacas_split }
