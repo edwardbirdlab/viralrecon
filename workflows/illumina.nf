@@ -580,7 +580,7 @@ workflow ILLUMINA {
         ch_primers.view()
         if (!params.skip_noninternal_primers){
             PREPARE_PRIMER_FASTA(
-                PREPARE_GENOME.out.primer_fasta.collect { it[1] }
+                PREPARE_GENOME.out.primer_fasta.collect
                 )
             ch_primers = PREPARE_PRIMER_FASTA.out.adapters
         }
