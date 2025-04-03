@@ -144,6 +144,7 @@ workflow PREPARE_GENOME {
                     ch_fasta
                 )
                 ch_primer_fasta = BEDTOOLS_GETFASTA.out.fasta
+                ch_primer_fasta.view()
                 ch_versions     = ch_versions.mix(BEDTOOLS_GETFASTA.out.versions)
             }
         }
