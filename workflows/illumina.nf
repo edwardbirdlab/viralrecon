@@ -577,10 +577,10 @@ workflow ILLUMINA {
     if (params.protocol == 'amplicon' && !params.skip_assembly && !params.skip_cutadapt) {
         PREPARE_GENOME.out.primer_fasta.view()
         ch_primers =  PREPARE_GENOME.out.primer_fasta.collect { it[1] }
-        ch_primers.view()
+        //ch_primers.view()
         if (!params.skip_noninternal_primers){
             PREPARE_PRIMER_FASTA(
-                PREPARE_GENOME.out.primer_fasta.collect
+                PREPARE_GENOME.out.primer_fasta
                 )
             ch_primers = PREPARE_PRIMER_FASTA.out.adapters
         }
