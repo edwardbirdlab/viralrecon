@@ -26,6 +26,9 @@ process BCFTOOLS_CONSENSUS {
         | bcftools \\
             consensus \\
             $vcf \\
+            -s - \\
+            -H A \\
+            -M N \\
             $args \\
             $masking \\
             > ${prefix}.fa
