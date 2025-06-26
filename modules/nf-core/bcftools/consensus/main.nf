@@ -25,6 +25,9 @@ process BCFTOOLS_CONSENSUS {
         | bcftools \\
             consensus \\
             $vcf \\
+            -s - \\
+            -H A \\
+            -M N \\
             $args \\
             > ${prefix}.fa
 
